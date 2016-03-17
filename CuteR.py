@@ -63,23 +63,16 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
         img_qr = img_qr.convert('1')
     img_res = img_qr
     for x in range(0,img_size):
-        if x >= 18 and x < 21 :
-            continue
         for y in range(0,img_size):
-            if y >= 18 and y < 21 or (x%3 ==1 and  y%3 == 1):
+            if (x%3 ==1 and  y%3 == 1):
                 continue
-            if x < 27 and (y < 27 or y > img_size-25):
+            if x < 24 and (y < 24 or y > img_size-25):
                 continue
-            if x > img_size-25 and (y < 27 ):
-                continue
-            if qr.version >6 and x > img_size-34 and (y < 21 ):
-                continue
-            if qr.version >6 and y > img_size-34 and (x < 21 ):
+            if x > img_size-25 and (y < 24 ):
                 continue
             if img_img.getpixel((x,y))[2] == 0:
                 continue
             img_res.putpixel((x+12,y+12),img_enh.getpixel((x,y)))
-            # img_res.putpixel((x+12,y+12),img_img.getpixel((x,y)))
     pos = qrcode.util.pattern_position(qr.version)
     img_qr2 = qr.make_image().convert("RGB")
     if colourful and ( rgb != (0,0,0) ):

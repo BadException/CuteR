@@ -6,8 +6,8 @@ Combine QRCode with picture
 Commands:
 
 ```bash
-python CuteR.py -c 20 -e H -o sample_output.png -v 10 sample_input.png http://www.chinuno.com
-python CuteR.py -C -r 0 100 50 sample_input.png http://www.chinuno.com #colourful mode
+python CuteR.py -c 10 -e H -o sample_output.png -v 10 sample_input.png http://www.chinuno.com
+python CuteR.py -C -r 100 50 100 sample_input.png http://www.chinuno.com #colourful mode
 ```
 ### Input
 
