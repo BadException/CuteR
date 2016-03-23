@@ -6,8 +6,8 @@ Combine QRCode with picture
 Commands:
 
 ```bash
-python CuteR.py -c 10 -e H -o sample_output.png -v 10 sample_input.png http://www.chinuno.com
-python CuteR.py -C -r 100 50 100 sample_input.png http://www.chinuno.com #colourful mode
+CuteR -c 10 -e H -o sample_output.png -v 10 sample_input.png http://www.chinuno.com
+CuteR -C -r 100 50 100 sample_input.png http://www.chinuno.com #colourful mode
 ```
 ### Input
 
@@ -20,6 +20,24 @@ python CuteR.py -C -r 100 50 100 sample_input.png http://www.chinuno.com #colour
 ### Output (colourful mode)
 
 ![image](https://github.com/chinuno-usami/CuteR/raw/master/sample_output_colourful.png)
+
+## Install
+
+### Install via pip
+
+`CuteR` is distributed on [PyPI](https://pypi.python.org/pypi/CuteR) now.
+```bash
+$ pip install CuteR
+```
+
+### Git clone
+
+```bash
+$ git clone https://github.com/chinuno-usami/CuteR.git
+```
+### Download from GitHub
+
+Download [zip archive](https://github.com/chinuno-usami/CuteR/archive/master.zip) and unzip
 
 ## Usage
 
@@ -46,7 +64,7 @@ arguments:
 
 usage:
 ```
-CuteR.py [-h] [-o OUTPUT] [-v VERSION] [-e {Q,H,M,L}] [-b BRIGHTNESS]
+CuteR [-h] [-o OUTPUT] [-v VERSION] [-e {Q,H,M,L}] [-b BRIGHTNESS]
                 [-c CONTRAST] [-C] [-r R G B]
                 image text
 

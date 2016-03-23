@@ -90,8 +90,7 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
     return img_res.resize((img_res.size[0]*10,img_res.size[1]*10))
 
 
-
-if __name__ == "__main__":
+def main():
     import argparse
     parser = argparse.ArgumentParser(description="Combine your QR code with custom picture")
     parser.add_argument("image")
@@ -132,3 +131,6 @@ if __name__ == "__main__":
     else:
         rgb = (0,0,0)
     produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgb=rgb).save(output)
+
+if __name__ == "__main__":
+    main()
