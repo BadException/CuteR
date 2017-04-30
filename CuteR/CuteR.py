@@ -6,10 +6,10 @@ from PIL import ImageEnhance
 import qrcode
 
 
-def color_replace(image,color):
+def color_replace(image, color):
     """Replace black with other color
 
-    :color: custom color (r,g,b)
+    :color: custom color (r,g,b,a)
     :image: image to replace color
     :returns: TODO
 
@@ -18,13 +18,12 @@ def color_replace(image,color):
     size = image.size[0]
     for width in range(size):
         for height in range(size):
-            r,g,b = pixels[width,height]
-            if (r,g,b) == (0,0,0):
+            r, g, b, a = pixels[width, height]
+            if (r, g, b, a) == (0,0,0,255):
                 pixels[width,height] = color
 
-
 def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, cont = 1.0,\
-        colourful = False, rgb = (0,0,0)):
+        colourful = False, rgba = (0,0,0,255),pixelate = False):
     """
 
     :txt: QR text
@@ -34,34 +33,39 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
     :bri: Brightness enhance
     :cont: Contrast enhance
     :colourful: If colourful mode
-    :rgb: color to replace black
+    :rgba: color to replace black
+    :pixelate: pixelate
     :returns: Produced image
 
     """
     qr = qrcode.QRCode(version = ver,error_correction = err_crt,box_size=3)
     qr.add_data(txt)
     qr.make(fit=True)
-    img_qr = qr.make_image().convert('RGB')
-    if colourful and ( rgb != (0,0,0) ):
-        color_replace(img_qr,rgb)
+    img_qr = qr.make_image().convert('RGBA')
+    if colourful and ( rgba != (0,0,0,255) ):
+        color_replace(img_qr,rgba)
     img_img = Image.open(img).convert('RGBA')
-    img_size = None
 
+    img_img_size = None
+    img_size = img_qr.size[0] - 24
     if img_img.size[0] < img_img.size[1]:
-        img_img = img_img.resize((img_qr.size[0]-24,int((img_qr.size[1]-24)*(1.0*img_img.size[1]/img_img.size[0]))))
-        img_size = img_img.size[0]
+        img_img_size = img_img.size[0]
     else:
-        img_img = img_img.resize( (int((img_qr.size[0]-24)*(1.0*img_img.size[0]/img_img.size[1])),(img_qr.size[1]-24)) )
-        img_size = img_img.size[1]
+        img_img_size = img_img.size[1]
 
-    enh = ImageEnhance.Contrast(img_img)
+    img_enh = img_img.crop((0,0,img_img_size,img_img_size))
+    enh = ImageEnhance.Contrast(img_enh)
     img_enh = enh.enhance(cont)
     enh = ImageEnhance.Brightness(img_enh)
     img_enh = enh.enhance(bri)
     if not colourful:
-        img_enh = img_enh.convert('1')
-        img_qr = img_qr.convert('1')
-    img_res = img_qr
+        if pixelate:
+            img_enh = img_enh.convert('1').convert('RGBA')
+        else:
+            img_enh = img_enh.convert('L').convert('RGBA')
+    img_frame = img_qr
+
+
     for x in range(0,img_size):
         for y in range(0,img_size):
             if (x%3 ==1 and  y%3 == 1):
@@ -70,13 +74,11 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
                 continue
             if x > img_size-25 and (y < 24 ):
                 continue
-            if img_img.getpixel((x,y))[2] == 0:
-                continue
-            img_res.putpixel((x+12,y+12),img_enh.getpixel((x,y)))
+            img_frame.putpixel((x+12,y+12),(255,0,0,0))
     pos = qrcode.util.pattern_position(qr.version)
-    img_qr2 = qr.make_image().convert("RGB")
-    if colourful and ( rgb != (0,0,0) ):
-        color_replace(img_qr2,rgb)
+    img_qr2 = qr.make_image().convert("RGBA")
+    if colourful and ( rgba != (0,0,0,0) ):
+        color_replace(img_qr2,rgba)
     for i in pos:
         for j in pos:
             if (i == 6 and j == pos[-1]) or (j == 6 and i == pos[-1])\
@@ -85,9 +87,16 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
             else:
                 rect = (3*(i-2)+12,3*(j-2)+12,3*(i+3)+12,3*(j+3)+12)
                 img_tmp = img_qr2.crop(rect)
-                img_res.paste(img_tmp,rect)
+                img_frame.paste(img_tmp,rect)
 
-    return img_res.resize((img_res.size[0]*10,img_res.size[1]*10))
+    img_res = Image.new("RGBA",(img_frame.size[0]*10,img_frame.size[1]*10),(255,255,255,255))
+    img_enh = img_enh.resize((img_size*10,img_size*10))
+    img_res.paste(img_enh,(120,120),img_enh)
+    img_frame = img_frame.resize((img_frame.size[0]*10,img_frame.size[1]*10))
+    img_res.paste(img_frame,(0,0),img_frame)
+    if pixelate:
+        return img_res.resize(img_qr.size).resize((img_img_size,img_img_size))
+    return img_res
 
 
 def main():
@@ -101,7 +110,8 @@ def main():
     parser.add_argument("-b", "--brightness", type=float, help="Brightness enhance")
     parser.add_argument("-c", "--contrast", type=float, help="Contrast enhance")
     parser.add_argument("-C", "--colourful", action="store_true",help="colourful mode")
-    parser.add_argument("-r", "--rgb", nargs=3, metavar=('R','G','B'),type = int, help="color to replace black")
+    parser.add_argument("-r", "--rgba", nargs=4, metavar=('R','G','B','A'),type = int, help="color to replace black")
+    parser.add_argument("-p", "--pixelate", action="store_true",help="pixelate")
     args = parser.parse_args()
 
     img = args.image
@@ -123,14 +133,15 @@ def main():
     cont = args.contrast if args.contrast else 1.0
     bri = args.brightness if args.brightness else 1.0
     colr = True if args.colourful else False
+    pixelate = True if args.pixelate else False
     if colr :
-        if args.rgb:
-          rgb = tuple(args.rgb)
+        if args.rgba:
+          rgba = tuple(args.rgba)
         else:
-            rgb = (0,0,0)
+            rgba = (0,0,0)
     else:
-        rgb = (0,0,0)
-    produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgb=rgb).save(output)
+        rgba = (0,0,0)
+    produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgba=rgba,pixelate = pixelate).save(output)
 
 if __name__ == "__main__":
     main()

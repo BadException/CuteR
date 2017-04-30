@@ -7,7 +7,7 @@ Commands:
 
 ```bash
 CuteR -c 10 -e H -o sample_output.png -v 10 sample_input.png http://www.chinuno.com
-CuteR -C -r 100 50 100 sample_input.png http://www.chinuno.com #colourful mode
+CuteR -C -r 100 50 100 188 sample_input.png http://www.chinuno.com #colourful mode
 ```
 ### Input
 
@@ -57,15 +57,16 @@ arguments:
       :bri: Brightness enhance
       :cont: Contrast enhance
       :colourful: If colourful mode
-      :rgb: color to replace black
+      :rgba: color to replace black
+      :pixelate: pixelate
       :returns: Produced image
 
 ### As command tool
 
 usage:
 ```
-CuteR [-h] [-o OUTPUT] [-v VERSION] [-e {Q,H,M,L}] [-b BRIGHTNESS]
-                [-c CONTRAST] [-C] [-r R G B]
+CuteR.py [-h] [-o OUTPUT] [-v VERSION] [-e {Q,H,M,L}] [-b BRIGHTNESS]
+                [-c CONTRAST] [-C] [-r R G B A] [-p]
                 image text
 
 Combine your QR code with custom picture
@@ -87,8 +88,10 @@ optional arguments:
   -c CONTRAST, --contrast CONTRAST
                         Contrast enhance
   -C, --colourful       colourful mode
-  -r R G B, --rgb R G B
+  -r R G B A, --rgba R G B A
                         color to replace black
+  -p, --pixelate        pixelate
+
 ```
 ## Dependencies
 - Python
