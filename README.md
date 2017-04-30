@@ -44,7 +44,7 @@ Download [zip archive](https://github.com/chinuno-usami/CuteR/archive/master.zip
 ### As python module
 
 ```python
-Import CuteR as cr
+from CuteR import CuteR as cr
 output = cr.produce(text,image)
 ```
 
