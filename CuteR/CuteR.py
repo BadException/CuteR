@@ -26,7 +26,7 @@ def color_replace(image, color):
 
 def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, cont = 1.0,\
         colourful = False, rgba = (0,0,0,255),pixelate = False):
-    """
+    """Produce QR code
 
     :txt: QR text
     :img: Image
@@ -66,17 +66,21 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
         else:
             img_enh = img_enh.convert('L').convert('RGBA')
     img_frame = img_qr
-
+    img_enh = img_enh.resize((img_size*10,img_size*10))
+    img_enh_l = img_enh.convert("L").resize((img_size,img_size))
+    img_frame_l = img_frame.convert("L")
 
     for x in range(0,img_size):
         for y in range(0,img_size):
-            if (x%3 ==1 and  y%3 == 1):
-                continue
             if x < 24 and (y < 24 or y > img_size-25):
                 continue
             if x > img_size-25 and (y < 24 ):
                 continue
-            img_frame.putpixel((x+12,y+12),(255,0,0,0))
+            if (x%3 ==1 and  y%3 == 1):
+                if (img_frame_l.getpixel((x+12,y+12)) > 70 and img_enh_l.getpixel((x,y)) < 185)\
+                        or (img_frame_l.getpixel((x+12,y+12)) < 185 and img_enh_l.getpixel((x,y)) > 70) :
+                    continue
+            img_frame.putpixel((x+12,y+12),(0,0,0,0))
     pos = qrcode.util.pattern_position(qr.version)
     img_qr2 = qr.make_image().convert("RGBA")
     if colourful and ( rgba != (0,0,0,0) ):
@@ -92,7 +96,6 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
                 img_frame.paste(img_tmp,rect)
 
     img_res = Image.new("RGBA",(img_frame.size[0]*10,img_frame.size[1]*10),(255,255,255,255))
-    img_enh = img_enh.resize((img_size*10,img_size*10))
     img_res.paste(img_enh,(120,120),img_enh)
     img_frame = img_frame.resize((img_frame.size[0]*10,img_frame.size[1]*10))
     img_res.paste(img_frame,(0,0),img_frame)
