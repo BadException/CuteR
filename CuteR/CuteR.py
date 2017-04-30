@@ -21,6 +21,8 @@ def color_replace(image, color):
             r, g, b, a = pixels[width, height]
             if (r, g, b, a) == (0,0,0,255):
                 pixels[width,height] = color
+            else:
+                pixels[width,height] = (r,g,b,color[3])
 
 def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, cont = 1.0,\
         colourful = False, rgba = (0,0,0,255),pixelate = False):
@@ -94,6 +96,7 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
     img_res.paste(img_enh,(120,120),img_enh)
     img_frame = img_frame.resize((img_frame.size[0]*10,img_frame.size[1]*10))
     img_res.paste(img_frame,(0,0),img_frame)
+    img_res = img_res.convert('RGB')
     if pixelate:
         return img_res.resize(img_qr.size).resize((img_img_size,img_img_size))
     return img_res
