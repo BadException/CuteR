@@ -144,9 +144,9 @@ def main():
         if args.rgba:
           rgba = tuple(args.rgba)
         else:
-            rgba = (0,0,0)
+            rgba = (0,0,0,255)
     else:
-        rgba = (0,0,0)
+        rgba = (0,0,0,255)
     produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgba=rgba,pixelate = pixelate).save(output)
 
 if __name__ == "__main__":
