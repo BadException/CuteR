@@ -3,6 +3,7 @@
 
 from PIL import Image
 from PIL import ImageEnhance
+from PIL import ImageSequence
 import qrcode
 
 
@@ -29,7 +30,32 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
     """Produce QR code
 
     :txt: QR text
-    :img: Image
+    :img: Image path / Image object
+    :ver: QR version
+    :err_crt: QR error correct
+    :bri: Brightness enhance
+    :cont: Contrast enhance
+    :colourful: If colourful mode
+    :rgba: color to replace black
+    :pixelate: pixelate
+    :returns: list of produced image
+
+    """
+    if type(img) is Image.Image:
+        pass
+    elif type(img) is str:
+        img = Image.open(img)
+    else:
+        return []
+    frames = [produce_impl(txt,frame.copy(),ver,err_crt,bri,cont,colourful,rgba,pixelate) for frame in ImageSequence.Iterator(img)]
+    return frames
+
+def produce_impl(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, cont = 1.0,\
+        colourful = False, rgba = (0,0,0,255),pixelate = False):
+    """Produce QR code
+
+    :txt: QR text
+    :img: Image object
     :ver: QR version
     :err_crt: QR error correct
     :bri: Brightness enhance
@@ -46,7 +72,7 @@ def produce(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 1.0, 
     img_qr = qr.make_image().convert('RGBA')
     if colourful and ( rgba != (0,0,0,255) ):
         color_replace(img_qr,rgba)
-    img_img = Image.open(img).convert('RGBA')
+    img_img = img.convert('RGBA')
 
     img_img_size = None
     img_size = img_qr.size[0] - 24
@@ -147,7 +173,11 @@ def main():
             rgba = (0,0,0,255)
     else:
         rgba = (0,0,0,255)
-    produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgba=rgba,pixelate = pixelate).save(output)
+    frames = produce(txt,img,ver,ec,bri, cont ,colourful = colr,rgba=rgba,pixelate = pixelate)
+    if len(frames) == 1 or output.upper()[-3:] != "GIF":
+        frames[0].save(output)
+    elif len(frames) > 1:
+        frames[0].save(output,save_all=True,append_images=frames[1:],duration=100,optimize=True)
 
 if __name__ == "__main__":
     main()

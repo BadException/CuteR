@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(name='CuteR',
-      version='1.2',
+      version='1.4',
       description='Custom QR Code with picture',
       author='Chinuno Usami',
       author_email='usami@chinuno.com',
