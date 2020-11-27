@@ -92,8 +92,8 @@ def produce_impl(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 
         else:
             img_enh = img_enh.convert('L').convert('RGBA')
     img_frame = img_qr
-    img_enh = img_enh.resize((img_size*10,img_size*10))
-    img_enh_l = img_enh.convert("L").resize((img_size,img_size))
+    img_enh = img_enh.resize((img_size*10,img_size*10), Image.NEAREST)
+    img_enh_l = img_enh.convert("L").resize((img_size,img_size), Image.NEAREST)
     img_frame_l = img_frame.convert("L")
 
     for x in range(0,img_size):
@@ -123,11 +123,11 @@ def produce_impl(txt,img,ver=5,err_crt = qrcode.constants.ERROR_CORRECT_H,bri = 
 
     img_res = Image.new("RGBA",(img_frame.size[0]*10,img_frame.size[1]*10),(255,255,255,255))
     img_res.paste(img_enh,(120,120),img_enh)
-    img_frame = img_frame.resize((img_frame.size[0]*10,img_frame.size[1]*10))
+    img_frame = img_frame.resize((img_frame.size[0]*10,img_frame.size[1]*10), Image.NEAREST)
     img_res.paste(img_frame,(0,0),img_frame)
     img_res = img_res.convert('RGB')
     if pixelate:
-        return img_res.resize(img_qr.size).resize((img_img_size,img_img_size))
+        return img_res.resize(img_qr.size, Image.NEAREST).resize((img_img_size,img_img_size), Image.NEAREST)
     return img_res
 
 
